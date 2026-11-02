@@ -1,4 +1,4 @@
-bot.import os
+import os
 import subprocess
 import asyncio
 from pyrogram import Client, filters
@@ -13,7 +13,7 @@ app = Client("drama_downloader_bot", api_id=API_ID, api_hash=API_HASH, bot_token
 @app.on_message(filters.command("start"))
 async def start_handler(client, message: Message):
     await message.reply_text(
-        "Marhaban! Sayfet lien dyal l-video (Story TV, Kuku TV, Rocket Reels, aw QuickTV), w ghadi ntelechargih w nsayftou lik."
+        "👋 Welcome! Story TV, Kuku TV, Rocket Reels ya QuickTV ka video link bhejein."
     )
 
 @app.on_message(filters.text & ~filters.command(["start", "help"]))
@@ -21,10 +21,10 @@ async def link_handler(client, message: Message):
     url = message.text.strip()
 
     if not url.startswith("http"):
-        await message.reply_text("3afak sayfet lien s7i7 dyal l-video.")
+        await message.reply_text("Kripya valid video link bhejein.")
         return
 
-    status = await message.reply_text("Telechargement bda, bqa m3ana chwiya...")
+    status = await message.reply_text("⏳ Download shuru ho raha hai...")
     output_filename = f"video_{message.from_user.id}.mp4"
 
     cmd = [
@@ -46,18 +46,18 @@ async def link_handler(client, message: Message):
         await process.communicate()
 
         if os.path.exists(output_filename) and os.path.getsize(output_filename) > 0:
-            await status.edit_text("L-video kitla3 l-Telegram...")
+            await status.edit_text("📤 Telegram par upload ho raha hai...")
             await message.reply_video(
                 video=output_filename,
-                caption="Safii, ha l-video dyalek ttelecharga!"
+                caption="✅ Download complete!"
             )
             os.remove(output_filename)
             await status.delete()
         else:
-            await status.edit_text("Telechargement ma nja7ch. L-lien machi stream direct aw tssala l-waqt dyalo.")
+            await status.edit_text("❌ Download fail ho gaya. Link direct streamable nahi hai.")
 
     except Exception as e:
-        await status.edit_text(f"Wqe3 mochkil: {str(e)}")
+        await status.edit_text(f"❌ Error: {str(e)}")
         if os.path.exists(output_filename):
             os.remove(output_filename)
 
